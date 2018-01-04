@@ -1,0 +1,147 @@
+﻿@page
+@model IndexModel
+@{
+    var warnings = (List<IndexModel.Warning>)ViewData["warnings"];
+    var maxDiff = (double)ViewData["maxdiff"];
+}
+
+
+<html>
+    <head>
+        <style type="text/css">
+        body {
+            font-family: verdana;
+            font-size: 0.8em;
+        }
+        a {
+            color: #222;
+            text-decoration: none;
+        }
+
+        .market {
+            border: 1px solid;
+            margin-bottom: 3px;
+            width: 100%;
+            text-align: center;
+            padding: 3px;
+        }
+        .red {
+            border-color: #FBB;
+            background-color: #FEE;
+        }
+        .green {
+            border-color: #BFB;
+            background-color: #EFE;
+        }
+
+        .label {
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .ask, .bid {
+            margin-bottom: 3px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .left, .middle, .right {
+            display: inline-block;
+        }
+
+        .left {
+            width: 40%;
+        }
+
+        .middle {
+            width: 8%;
+            text-align: center;
+        }
+        .right {
+            width: 40%;
+        }
+
+        .bar {
+            background-color: #ddd;
+        }
+
+        .right .bar {
+            float: left;
+            text-align: right;
+        }
+
+        .left .bar {
+            float: right;
+            text-align: left;
+        }
+
+        </style>
+    </head>
+<body>
+
+
+@{
+    foreach (var warning in warnings) {
+
+        var diff = Math.Round(warning.diff * 100, 2).ToString();
+
+        var ask = (warning.ask * 1000).ToString();
+        var bid = (warning.bid * 1000).ToString();
+        var lowAsk = (warning.lowAsk * 1000).ToString();
+        var highAsk = (warning.highAsk * 1000).ToString();
+        var lowBid = (warning.lowBid * 1000).ToString();
+        var highBid = (warning.highBid * 1000).ToString();
+
+        var lowAskWidthPercent = Math.Round(((Math.Abs(warning.ask - warning.lowAsk) / warning.ask) / maxDiff) * 100);
+        var highAskWidthPercent = Math.Round(((Math.Abs(warning.ask - warning.highAsk) / warning.ask) / maxDiff) * 100);
+        var lowBidWidthPercent = Math.Round(((Math.Abs(warning.bid - warning.lowBid) / warning.bid) / maxDiff) * 100);
+        var highBidWidthPercent = Math.Round(((Math.Abs(warning.bid -warning.highBid) / warning.bid) / maxDiff) * 100);
+
+        if (lowAskWidthPercent < 10) {lowAskWidthPercent = 10;}
+        if (highAskWidthPercent < 10) {highAskWidthPercent = 10;}
+        if (lowBidWidthPercent < 10) {lowBidWidthPercent = 10;}
+        if (highBidWidthPercent < 10) {highBidWidthPercent = 10;}
+
+
+        <div class="market @(warning.increase ? "green" : "red")">
+            <div class="label">
+                <a href="@warning.url">@warning.label</a>
+                @(diff)%
+            </div>
+
+            <div class="ask">
+                <div class="left">
+                    <div style="width:@(lowAskWidthPercent)%" class="bar">@lowAsk</div>
+                </div>
+                <div class="middle">
+                    <strong>Ask</strong> @ask
+                </div>
+                <div class="right">
+                    <div style="width:@(highAskWidthPercent)%" class="bar">@highAsk</div>
+                </div>
+            </div>
+            
+            <div class="bid">
+                <div class="left">
+                    <div style="width:@(lowBidWidthPercent)%" class="bar">@lowBid</div>
+                </div>
+                <div class="middle">
+                    <strong>Bid</strong> @bid
+                </div>
+                <div class="right">
+                    <div style="width:@(highBidWidthPercent)%" class="bar">@highBid</div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    }
+}
+</body>
+
+</html>
